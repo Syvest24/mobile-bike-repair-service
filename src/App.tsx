@@ -24,15 +24,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   const { user } = useAuth();
+function AppContent() {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Auth />;
+  }
   
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/book" element={<ProtectedRoute><BookService /></ProtectedRoute>} />
-        <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/auth" element={user ? <Navigate to="/" /> : <Auth />} />
+        <Route path="/book" element={<BookService />} />
+        <Route path="/bookings" element={<Bookings />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Layout>
@@ -43,10 +48,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/*" element={<ProtectedRoute><AppRoutes /></ProtectedRoute>} />
-        </Routes>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
