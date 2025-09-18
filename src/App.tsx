@@ -24,6 +24,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   const { user } = useAuth();
+}
 function AppContent() {
   const { user } = useAuth();
   
