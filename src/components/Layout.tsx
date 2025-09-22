@@ -1,9 +1,9 @@
 import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Home, Calendar, User, Settings, Wrench } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function Layout() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -43,7 +43,7 @@ export default function Layout() {
 
       {/* Main Content */}
       <main className="flex-1">
-        <Outlet />
+        {children}
       </main>
 
       {/* Bottom Navigation - Mobile */}
