@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
@@ -27,20 +28,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper function to map Supabase user to our User type
+  const mapSupabaseUser = (supabaseUser: SupabaseUser): User => {
+    return {
+      id: supabaseUser.id,
+      email: supabaseUser.email || '',
+      name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
+      created_at: supabaseUser.created_at || new Date().toISOString(),
+    };
+  };
+
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
       try {
         if (supabase) {
           const { data: { session } } = await supabase.auth.getSession();
-          setUser(session?.user ?? null);
+          setUser(session?.user ? mapSupabaseUser(session.user) : null);
         } else {
           // Mock user for development when Supabase is not configured
           setUser({
             id: 'mock-user-id',
             email: 'demo@example.com',
-            user_metadata: { full_name: 'Demo User' }
-          } as any);
+            name: 'Demo User',
+            created_at: new Date().toISOString(),
+          });
         }
       } catch (error) {
         console.error('Error getting initial session:', error);
@@ -57,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (supabase) {
       const { data } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          setUser(session?.user ?? null);
+          setUser(session?.user ? mapSupabaseUser(session.user) : null);
           setLoading(false);
         }
       );
@@ -84,8 +96,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser({
             id: 'mock-user-id',
             email: 'demo@example.com',
-            user_metadata: { full_name: 'Demo User' }
-          } as any);
+            name: 'Demo User',
+            created_at: new Date().toISOString(),
+          });
           return { error: null };
         } else {
           setError('Invalid credentials. Use demo@example.com / password');
@@ -118,9 +131,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Mock sign up for development
         setUser({
           id: 'mock-user-id',
-          email: email,
-          user_metadata: { full_name: name || 'New User' }
-        } as any);
+          email,
+          name: name || 'New User',
+          created_at: new Date().toISOString(),
+        });
         return { error: null };
       }
     } catch (error) {
