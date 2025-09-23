@@ -1,9 +1,20 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Check if environment variables are properly configured
+if (!supabaseUrl || !supabaseAnonKey || 
+    supabaseUrl === 'https://your-project-id.supabase.co' || 
+    supabaseAnonKey === 'your-anon-key') {
+  console.warn('Supabase environment variables not configured. Using mock authentication.');
+}
+
+export const supabase = supabaseUrl && supabaseAnonKey && 
+  supabaseUrl !== 'https://your-project-id.supabase.co' && 
+  supabaseAnonKey !== 'your-anon-key' 
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 // Mock data for demonstration
 export const mockUser = {

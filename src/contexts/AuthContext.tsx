@@ -31,8 +31,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Get initial session
     const getInitialSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
+        if (supabase) {
+          const { data: { session } } = await supabase.auth.getSession();
+          setUser(session?.user ?? null);
+        } else {
+          // Mock user for development when Supabase is not configured
+          setUser({
+            id: 'mock-user-id',
+            email: 'demo@example.com',
+            user_metadata: { full_name: 'Demo User' }
+          } as any);
+        }
       } catch (error) {
         console.error('Error getting initial session:', error);
       } finally {
@@ -43,26 +52,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     getInitialSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    let subscription: any;
+    
+    if (supabase) {
+      const { data } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      );
+      subscription = data.subscription;
+    }
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) {
-        setError(error.message);
+      if (supabase) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) {
+          setError(error.message);
+        }
+        return { error };
+      } else {
+        // Mock authentication for development
+        if (email === 'demo@example.com' && password === 'password') {
+          setUser({
+            id: 'mock-user-id',
+            email: 'demo@example.com',
+            user_metadata: { full_name: 'Demo User' }
+          } as any);
+          return { error: null };
+        } else {
+          setError('Invalid credentials. Use demo@example.com / password');
+          return { error: { message: 'Invalid credentials' } };
+        }
       }
-      return { error };
     } catch (error) {
       setError('An unexpected error occurred');
       return { error };
@@ -71,19 +100,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, name?: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: name ? {
-          data: {
-            full_name: name,
-          }
-        } : undefined,
-      });
-      if (error) {
-        setError(error.message);
+      if (supabase) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: name ? {
+            data: {
+              full_name: name,
+            }
+          } : undefined,
+        });
+        if (error) {
+          setError(error.message);
+        }
+        return { error };
+      } else {
+        // Mock sign up for development
+        setUser({
+          id: 'mock-user-id',
+          email: email,
+          user_metadata: { full_name: name || 'New User' }
+        } as any);
+        return { error: null };
       }
-      return { error };
     } catch (error) {
       setError('An unexpected error occurred');
       return { error };
@@ -92,7 +131,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      if (supabase) {
+        await supabase.auth.signOut();
+      } else {
+        // Mock sign out
+        setUser(null);
+      }
     } catch (error) {
       console.error('Error signing out:', error);
       setError('Error signing out');
