@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Calendar, User, Settings, Wrench, LogOut, Menu, Bell, Search, MapPin } from 'lucide-react';
+import { Home, Calendar, User, Wrench, LogOut, Menu, Bell, Search, MapPin } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
