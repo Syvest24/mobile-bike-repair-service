@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wrench, Mail, Lock, User } from 'lucide-react';
+import { Wrench, Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Auth() {
@@ -7,12 +7,14 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, error, clearError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    clearError();
 
     try {
       if (isSignUp) {
@@ -25,6 +27,14 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleAuthMode = () => {
+    setIsSignUp(!isSignUp);
+    clearError();
+    setEmail('');
+    setPassword('');
+    setName('');
   };
 
   return (
@@ -41,6 +51,13 @@ export default function Auth() {
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-8">
+          {error && (
+            <div className="mb-4 p-3 bg-error-50 border border-error-200 rounded-lg flex items-center">
+              <AlertCircle className="h-4 w-4 text-error-600 mr-2" />
+              <span className="text-sm text-error-700">{error}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {isSignUp && (
               <div>
@@ -88,20 +105,33 @@ export default function Auth() {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input pl-10"
+                  className="input pl-10 pr-10"
                   placeholder="Enter your password"
+                  minLength={6}
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
+              {isSignUp && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Password must be at least 6 characters long
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full"
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Please wait...' : (isSignUp ? 'Create Account' : 'Sign In')}
             </button>
@@ -109,7 +139,7 @@ export default function Auth() {
 
           <div className="mt-6 text-center">
             <button
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={toggleAuthMode}
               className="text-primary-600 hover:text-primary-700 text-sm font-medium"
             >
               {isSignUp 
@@ -124,8 +154,17 @@ export default function Auth() {
               <p className="text-sm text-gray-600 mb-2">Demo credentials:</p>
               <p className="text-xs text-gray-500">
                 Email: cyclist@example.com<br />
-                Password: any password
+                Password: password123
               </p>
+              <button
+                onClick={() => {
+                  setEmail('cyclist@example.com');
+                  setPassword('password123');
+                }}
+                className="mt-2 text-xs text-primary-600 hover:text-primary-700"
+              >
+                Use demo credentials
+              </button>
             </div>
           )}
         </div>

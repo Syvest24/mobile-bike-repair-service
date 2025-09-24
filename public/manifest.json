@@ -1,0 +1,25 @@
+{
+  "name": "BikeRepair - Mobile Bike Repair Service",
+  "short_name": "BikeRepair",
+  "description": "On-demand bike repair service that comes to you",
+  "theme_color": "#0284c7",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

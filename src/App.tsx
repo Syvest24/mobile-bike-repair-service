@@ -19,26 +19,53 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
   
-  return user ? <>{children}</> : <Navigate to="/auth" />;
+  return user ? <>{children}</> : <Navigate to="/auth" replace />;
 }
 
-function AppRoutes() {
-  const { user } = useAuth();
+function AppContent() {
+  const { user, loading } = useAuth();
   
-  if (!user) {
-    return <Auth />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
   }
-
+  
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/book" element={<BookService />} />
-        <Route path="/bookings" element={<Bookings />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Layout>
+    <Routes>
+      <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Layout>
+            <Home />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/book" element={
+        <ProtectedRoute>
+          <Layout>
+            <BookService />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/bookings" element={
+        <ProtectedRoute>
+          <Layout>
+            <Bookings />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Layout>
+            <Profile />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      <Route path="*" element={<Navigate to={user ? "/" : "/auth"} replace />} />
+    </Routes>
   );
 }
 
@@ -46,7 +73,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <AppRoutes />
+        <AppContent />
       </Router>
     </AuthProvider>
   );
