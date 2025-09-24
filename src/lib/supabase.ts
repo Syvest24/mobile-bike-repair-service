@@ -1,33 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Explicitly tell TypeScript that import.meta.env has these variables
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 // Check if environment variables are properly configured
-if (!supabaseUrl || !supabaseAnonKey || 
-    supabaseUrl === 'https://your-project-id.supabase.co' || 
-    supabaseAnonKey === 'your-anon-key') {
+if (
+  !SUPABASE_URL ||
+  !SUPABASE_ANON_KEY ||
+  SUPABASE_URL === 'https://your-project-id.supabase.co' ||
+  SUPABASE_ANON_KEY === 'your-anon-key'
+) {
   console.warn('Supabase environment variables not configured. Using mock authentication.');
 }
 
-
-// Explicitly tell TypeScript that import.meta.env has these variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
-
-
-
-export const supabase = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl !== 'https://your-project-id.supabase.co' && 
-  supabaseAnonKey !== 'your-anon-key' 
-    ? createClient(supabaseUrl, supabaseAnonKey)
+// Only create Supabase client if env variables are valid
+export const supabase =
+  SUPABASE_URL && SUPABASE_ANON_KEY &&
+  SUPABASE_URL !== 'https://your-project-id.supabase.co' &&
+  SUPABASE_ANON_KEY !== 'your-anon-key'
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
 
-// Mock data for demonstration
+// ------------------ Mock Data ------------------
 export const mockUser = {
   id: '1',
   email: 'cyclist@example.com',
@@ -98,10 +93,7 @@ export const mockMechanics = [
     avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
     rating: 4.9,
     specialties: ['Road Bikes', 'Mountain Bikes', 'E-bikes'],
-    current_location: {
-      latitude: 40.7128,
-      longitude: -74.0060
-    },
+    current_location: { latitude: 40.7128, longitude: -74.0060 },
     is_available: true
   },
   {
@@ -110,10 +102,7 @@ export const mockMechanics = [
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
     rating: 4.8,
     specialties: ['Urban Bikes', 'Fixies', 'Vintage Bikes'],
-    current_location: {
-      latitude: 40.7589,
-      longitude: -73.9851
-    },
+    current_location: { latitude: 40.7589, longitude: -73.9851 },
     is_available: true
   }
 ];
