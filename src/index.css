@@ -50,15 +50,15 @@
   }
   
   .badge-success {
-    @apply badge bg-success-50 text-success-700 border border-success-200;
+    @apply badge bg-success-50 text-success-600 border border-success-200;
   }
   
   .badge-warning {
-    @apply badge bg-warning-50 text-warning-700 border border-warning-200;
+    @apply badge bg-warning-50 text-warning-600 border border-warning-200;
   }
   
   .badge-error {
-    @apply badge bg-error-50 text-error-700 border border-error-200;
+    @apply badge bg-error-50 text-error-600 border border-error-200;
   }
 
   /* Custom scrollbar */
