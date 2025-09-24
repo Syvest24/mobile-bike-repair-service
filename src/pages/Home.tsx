@@ -2,70 +2,62 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Wrench, MapPin, Clock, Star, Shield, Zap,
-  Users, Calendar, TrendingUp, ArrowRight, CheckCircle, Phone
+  Calendar, TrendingUp, ArrowRight, CheckCircle, Phone
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
-
-interface ServiceRequest {
-  id: string;
-  user_id: string;
-  issues: { description: string; estimated_cost: number; estimated_time: number }[];
-  location: { address: string };
-  status: string;
-  estimated_arrival: string;
-}
-
-interface Mechanic {
-  id: string;
-  name: string;
-  avatar: string;
-  rating: number;
-  specialties: string[];
-  is_available: boolean;
-}
+import { supabase, mockServiceRequests, mockMechanics } from '../lib/supabase';
+import { ServiceRequest, Mechanic } from '../types';
 
 export default function Home() {
   const { user } = useAuth();
   const [recentService, setRecentService] = useState<ServiceRequest | null>(null);
-  const [availableMechanics, setAvailableMechanics] = useState<Mechanic[]>([]);
-  
+  const [availableMechanics, setAvailableMechanics] = useState<number>(0);
+  const [mechanicsList, setMechanicsList] = useState<Mechanic[]>([]);
+
   useEffect(() => {
     if (!user) return;
 
-    // Fetch recent service request for the logged-in user
-    const fetchRecentService = async () => {
-      const { data, error } = await supabase
-        .from<ServiceRequest>('service_requests')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+    const fetchData = async () => {
+      if (supabase) {
+        try {
+          // Fetch user's most recent service request
+          const { data: serviceData } = await supabase
+            .from<ServiceRequest>('service_requests')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          setRecentService(serviceData || null);
 
-      if (error) console.error(error);
-      else setRecentService(data);
+          // Fetch available mechanics
+          const { data: mechanicsData } = await supabase
+            .from<Mechanic>('mechanics')
+            .select('*')
+            .eq('is_available', true);
+          setMechanicsList(mechanicsData || []);
+          setAvailableMechanics(mechanicsData?.length || 0);
+        } catch (error) {
+          console.error('Error fetching Supabase data:', error);
+          // Fallback to mock data
+          setRecentService(mockServiceRequests[0]);
+          setMechanicsList(mockMechanics);
+          setAvailableMechanics(mockMechanics.filter(m => m.is_available).length);
+        }
+      } else {
+        // Use mock data
+        setRecentService(mockServiceRequests[0]);
+        setMechanicsList(mockMechanics);
+        setAvailableMechanics(mockMechanics.filter(m => m.is_available).length);
+      }
     };
 
-    // Fetch available mechanics
-    const fetchAvailableMechanics = async () => {
-      const { data, error } = await supabase
-        .from<Mechanic>('mechanics')
-        .select('*')
-        .eq('is_available', true);
-
-      if (error) console.error(error);
-      else setAvailableMechanics(data || []);
-    };
-
-    fetchRecentService();
-    fetchAvailableMechanics();
+    fetchData();
   }, [user]);
-
-  const availableCount = availableMechanics.length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-8">
+
       {/* Hero Section */}
       <div className="text-center mb-10">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -78,7 +70,6 @@ export default function Home() {
           Professional bike mechanics come to you. Fast, reliable, and convenient service 
           for urban cyclists and cycling enthusiasts.
         </p>
-        
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/book" className="btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
             <Wrench className="h-5 w-5 mr-2" />
@@ -95,7 +86,7 @@ export default function Home() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
         <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div className="text-3xl font-bold text-primary-600 mb-2">{availableCount}</div>
+          <div className="text-3xl font-bold text-primary-600 mb-2">{availableMechanics}</div>
           <div className="text-sm font-medium text-gray-600">Mechanics Available</div>
         </div>
         <div className="text-center p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -112,6 +103,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Current Service */}
       {user && recentService && recentService.status !== 'completed' && (
         <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-8 border border-primary-200">
           <div className="flex items-start justify-between mb-4">
@@ -133,7 +125,7 @@ export default function Home() {
               {recentService.status.replace('_', ' ').toUpperCase()}
             </span>
           </div>
-          
+
           <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-primary-200">
             <div className="flex items-center justify-between">
               <div>
@@ -148,9 +140,7 @@ export default function Home() {
                 <button className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                   <Phone className="h-4 w-4" />
                 </button>
-                <Link to="/bookings" className="btn-primary">
-                  View Details
-                </Link>
+                <Link to="/bookings" className="btn-primary">View Details</Link>
               </div>
             </div>
           </div>
@@ -194,18 +184,49 @@ export default function Home() {
         </Link>
       </div>
 
+      {/* Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <div className="text-center">
+          <div className="p-4 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center shadow-lg">
+            <MapPin className="h-8 w-8 text-primary-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">We Come to You</h3>
+          <p className="text-gray-600 leading-relaxed">
+            Our mechanics travel to your location - office, home, or anywhere you need service.
+          </p>
+        </div>
+        <div className="text-center">
+          <div className="p-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center shadow-lg">
+            <Clock className="h-8 w-8 text-success-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Fast Response</h3>
+          <p className="text-gray-600 leading-relaxed">
+            Average 15-minute response time with real-time tracking of your mechanic.
+          </p>
+        </div>
+        <div className="text-center">
+          <div className="p-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center shadow-lg">
+            <Shield className="h-8 w-8 text-warning-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">Quality Guaranteed</h3>
+          <p className="text-gray-600 leading-relaxed">
+            All repairs backed by our satisfaction guarantee and professional mechanics.
+          </p>
+        </div>
+      </div>
+
       {/* Available Mechanics */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-semibold text-gray-900">Available Mechanics</h3>
           <div className="flex items-center">
             <div className="h-2 w-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <span className="text-sm font-medium text-green-600">{availableCount} online now</span>
+            <span className="text-sm font-medium text-green-600">{availableMechanics} online now</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {availableMechanics.slice(0, 2).map((mechanic) => (
+          {mechanicsList.slice(0, 2).map((mechanic) => (
             <div key={mechanic.id} className="flex items-center p-6 border border-gray-200 rounded-xl hover:shadow-md hover:border-primary-200 transition-all duration-200">
               <img
                 src={mechanic.avatar}
@@ -232,6 +253,7 @@ export default function Home() {
           ))}
         </div>
       </div>
+
     </div>
   );
 }
