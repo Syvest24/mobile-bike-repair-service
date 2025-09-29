@@ -1,20 +1,48 @@
 import { createClient } from '@supabase/supabase-js';
+import { User } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Check if environment variables are properly configured
-if (!supabaseUrl || !supabaseAnonKey || 
-    supabaseUrl === 'https://your-project-id.supabase.co' || 
-    supabaseAnonKey === 'your-anon-key') {
-  console.warn('Supabase environment variables not configured. Using mock authentication.');
+// Test Supabase connection
+if (supabaseUrl && supabaseAnonKey) {
+  console.log('✅ Supabase configured successfully');
+  console.log('📡 URL:', supabaseUrl);
+  console.log('🔑 Key configured:', supabaseAnonKey ? 'Yes' : 'No');
+} else {
+  console.warn('⚠️ Supabase environment variables not found');
 }
 
-export const supabase = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl !== 'https://your-project-id.supabase.co' && 
-  supabaseAnonKey !== 'your-anon-key' 
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : null;
+
+// Test connection function
+export const testSupabaseConnection = async () => {
+  if (!supabase) {
+    console.error('❌ Supabase client not initialized');
+    return false;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('❌ Supabase connection error:', error.message);
+      return false;
+    }
+    console.log('✅ Supabase connection successful');
+    return true;
+  } catch (error) {
+    console.error('❌ Supabase connection failed:', error);
+    return false;
+  }
+};
 
 // Mock data for demonstration
 export const mockUser = {

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, testSupabaseConnection } from '../lib/supabase';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -41,21 +41,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
+      // Test Supabase connection first
+      if (supabase) {
+        const connectionTest = await testSupabaseConnection();
+        if (!connectionTest) {
+          console.warn('⚠️ Supabase connection failed, using mock data');
+        }
+      }
+
       try {
         if (supabase) {
           const { data: { session } } = await supabase.auth.getSession();
+          console.log('🔐 Session status:', session ? 'Active' : 'None');
           setUser(session?.user ? mapSupabaseUser(session.user) : null);
         } else {
-          // Mock user for development when Supabase is not configured
-          setUser({
-            id: 'mock-user-id',
-            email: 'demo@example.com',
-            name: 'Demo User',
-            created_at: new Date().toISOString(),
-          });
+          console.warn('⚠️ Supabase not configured, using mock authentication');
+          // Don't auto-login with mock user, let them sign in
+          setUser(null);
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
+        console.error('❌ Error getting initial session:', error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -69,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (supabase) {
       const { data } = supabase.auth.onAuthStateChange(
         async (event, session) => {
+          console.log('🔄 Auth state changed:', event, session ? 'User logged in' : 'User logged out');
           setUser(session?.user ? mapSupabaseUser(session.user) : null);
           setLoading(false);
         }
@@ -81,27 +88,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
+      setError(null);
       if (supabase) {
+        console.log('🔐 Attempting sign in with:', email);
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) {
+          console.error('❌ Sign in error:', error.message);
           setError(error.message);
+        } else {
+          console.log('✅ Sign in successful');
         }
         return { error };
       } else {
         // Mock authentication for development
-        if (email === 'demo@example.com' && password === 'password') {
+        console.log('🧪 Using mock authentication');
+        if (email === 'cyclist@example.com' && password === 'password123') {
           setUser({
             id: 'mock-user-id',
-            email: 'demo@example.com',
-            name: 'Demo User',
+            email: 'cyclist@example.com',
+            name: 'Alex Rider',
+            phone: '+1 (555) 123-4567',
+            subscription_plan: 'premium',
             created_at: new Date().toISOString(),
           });
+          console.log('✅ Mock sign in successful');
           return { error: null };
         } else {
-          setError('Invalid credentials. Use demo@example.com / password');
+          setError('Invalid credentials. Use cyclist@example.com / password123');
           return { error: { message: 'Invalid credentials' } };
         }
       }
@@ -113,7 +129,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, name?: string) => {
     try {
+      setError(null);
       if (supabase) {
+        console.log('📝 Attempting sign up with:', email);
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -124,7 +142,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           } : undefined,
         });
         if (error) {
+          console.error('❌ Sign up error:', error.message);
           setError(error.message);
+        } else {
+          console.log('✅ Sign up successful - check email for confirmation');
         }
         return { error };
       } else {
@@ -133,6 +154,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: 'mock-user-id',
           email,
           name: name || 'New User',
+          subscription_plan: 'basic',
           created_at: new Date().toISOString(),
         });
         return { error: null };
@@ -146,13 +168,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       if (supabase) {
+        console.log('👋 Signing out...');
         await supabase.auth.signOut();
+        console.log('✅ Sign out successful');
       } else {
         // Mock sign out
+        console.log('🧪 Mock sign out');
         setUser(null);
       }
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('❌ Error signing out:', error);
       setError('Error signing out');
     }
   };
