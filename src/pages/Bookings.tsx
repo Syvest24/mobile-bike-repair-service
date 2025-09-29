@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, MapPin, Clock, DollarSign, User, Phone } from 'lucide-react';
+import Breadcrumb from '../components/Breadcrumb';
 import { mockServiceRequests, mockMechanics } from '../lib/supabase';
 
 export default function Bookings() {
@@ -31,6 +32,8 @@ export default function Bookings() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
+      <Breadcrumb items={[{ label: 'My Bookings' }]} className="mb-6" />
+      
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
         <div className="text-sm text-gray-600">

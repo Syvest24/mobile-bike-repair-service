@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   User, Mail, Phone, CreditCard, Settings, Star, Award, 
   Edit3, Save, X, Camera, Shield, Bell, MapPin, 
   Calendar, Clock, TrendingUp, Heart, Bike, Wrench,
   ChevronRight, Plus, Trash2
 } from 'lucide-react';
+import Breadcrumb from '../components/Breadcrumb';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'profile' | 'bikes' | 'subscription' | 'payment' | 'settings'>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview';
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({
     name: user?.name || '',
@@ -19,6 +22,15 @@ export default function Profile() {
   });
 
   if (!user) return null;
+
+  const setActiveTab = (tab: string) => {
+    setSearchParams({ tab });
+  };
+
+  const breadcrumbItems = [
+    { label: 'Profile', href: '/profile' },
+    ...(activeTab !== 'overview' ? [{ label: activeTab.charAt(0).toUpperCase() + activeTab.slice(1) }] : [])
+  ];
 
   const subscriptionPlans = [
     {
@@ -72,6 +84,8 @@ export default function Profile() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
+      <Breadcrumb items={breadcrumbItems} className="mb-6" />
+      
       {/* Profile Header */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-8 mb-8 text-white">
         <div className="flex items-center justify-between mb-6">
