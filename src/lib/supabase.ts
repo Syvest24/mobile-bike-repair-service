@@ -8,8 +8,8 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 if (
   !SUPABASE_URL ||
   !SUPABASE_ANON_KEY ||
-  SUPABASE_URL === 'https://your-project-id.supabase.co' ||
-  SUPABASE_ANON_KEY === 'your-anon-key'
+  SUPABASE_URL === import.meta.env.VITE_SUPABASE_URL ||
+  SUPABASE_ANON_KEY === import.meta.env.VITE_SUPABASE_ANON_KEY
 ) {
   console.warn('Supabase environment variables not configured. Using mock authentication.');
 }
@@ -17,8 +17,8 @@ if (
 // Only create Supabase client if env variables are valid
 export const supabase =
   SUPABASE_URL && SUPABASE_ANON_KEY &&
-  SUPABASE_URL !== 'https://your-project-id.supabase.co' &&
-  SUPABASE_ANON_KEY !== 'your-anon-key'
+  SUPABASE_URL !== import.meta.env.VITE_SUPABASE_URL &&
+  SUPABASE_ANON_KEY !== import.meta.env.VITE_SUPABASE_ANON_KEY
     ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
 
