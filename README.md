@@ -95,19 +95,103 @@ npm run preview
 
 3. **Install dependencies and adapt components**
 
-### Option 4: Netlify/Vercel Deployment
+### Deployment Options
 
-1. **Deploy to Netlify:**
+#### 1. Netlify Deployment
+
+**Automatic Deployment:**
+1. Connect your GitHub repository to Netlify
+2. Set build command: `npm run build`
+3. Set publish directory: `dist`
+4. Add environment variables in Netlify dashboard:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+
+**Manual Deployment:**
+```bash
+npm run build
+# Upload dist folder to Netlify or use Netlify CLI
+npx netlify deploy --prod --dir=dist
+```
+
+#### 2. Vercel Deployment
+
+**Automatic Deployment:**
+1. Connect your GitHub repository to Vercel
+2. Vercel will auto-detect Vite configuration
+3. Add environment variables in Vercel dashboard:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+
+**Manual Deployment:**
+```bash
+npm run build
+# Deploy using Vercel CLI
+npx vercel --prod
+```
+
+#### 3. Manual Build and Deploy
+```bash
+npm run build
+# Upload dist folder to any static hosting service
+```
+
+### Deployment Checklist
+
+✅ **Pre-deployment:**
+- [ ] Environment variables configured
+- [ ] Build completes without errors
+- [ ] All routes work with SPA routing
+- [ ] PWA manifest and service worker configured
+- [ ] Images and assets load correctly
+
+✅ **Post-deployment:**
+- [ ] Test authentication flow
+- [ ] Verify Supabase connection
+- [ ] Test mobile responsiveness
+- [ ] Check PWA installation
+- [ ] Validate all navigation routes
+
+### Environment Variables Setup
+
+Both platforms require these environment variables:
+
    ```bash
-   npm run build
-   # Upload dist folder to Netlify
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key_here
    ```
 
-2. **Deploy to Vercel:**
+### Build Optimization
+
+The app includes several optimizations for production:
+
+- **Code splitting** for vendor and UI libraries
+- **PWA support** with offline caching
+- **Image optimization** for external assets
+- **Security headers** for enhanced protection
+- **SPA routing** with proper redirects
+
+### Troubleshooting Deployment
+
+**Common Issues:**
+
+1. **404 on page refresh:**
+   - Ensure SPA redirects are configured (`_redirects` for Netlify, `vercel.json` for Vercel)
+
+2. **Environment variables not working:**
+   - Verify variables are prefixed with `VITE_`
+   - Check they're set in the hosting platform dashboard
+
+3. **Build failures:**
    ```bash
-   npm install -g vercel
-   vercel --prod
+npm run type-check  # Check for TypeScript errors
+npm run build       # Test local build
    ```
+
+4. **Supabase connection issues:**
+   - Verify URL and key are correct
+   - Check Supabase project is active
+   - Ensure RLS policies allow anonymous access where needed
 
 ## Mobile Testing Steps
 
