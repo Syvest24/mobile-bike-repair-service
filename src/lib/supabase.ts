@@ -1,15 +1,50 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
+import { User } from '../types';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase environment variables are missing')
+// Test Supabase connection
+if (supabaseUrl && supabaseAnonKey) {
+  console.log('✅ Supabase configured successfully');
+  console.log('📡 URL:', supabaseUrl);
+  console.log('🔑 Key configured:', supabaseAnonKey ? 'Yes' : 'No');
+} else {
+  console.warn('⚠️ Supabase environment variables not found');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : null;
 
-// --- Mock Data (for local dev/demo only) ---
+// Test connection function
+export const testSupabaseConnection = async () => {
+  if (!supabase) {
+    console.error('❌ Supabase client not initialized');
+    return false;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('❌ Supabase connection error:', error.message);
+      return false;
+    }
+    console.log('✅ Supabase connection successful');
+    return true;
+  } catch (error) {
+    console.error('❌ Supabase connection failed:', error);
+    return false;
+  }
+};
+
+// Mock data for demonstration
 export const mockUser = {
   id: '1',
   email: 'cyclist@example.com',
@@ -17,7 +52,7 @@ export const mockUser = {
   phone: '+1 (555) 123-4567',
   subscription_plan: 'premium' as const,
   created_at: '2024-01-15T10:00:00Z'
-}
+};
 
 export const mockServiceRequests = [
   {
@@ -50,7 +85,6 @@ export const mockServiceRequests = [
   {
     id: '2',
     user_id: '1',
-    mechanic_id: 'mech-2',
     location: {
       latitude: 40.7589,
       longitude: -73.9851,
@@ -68,13 +102,11 @@ export const mockServiceRequests = [
     ],
     status: 'pending' as const,
     scheduled_time: '2024-01-21T10:00:00Z',
-    estimated_arrival: '2024-01-21T10:15:00Z',
-    total_cost: 45,
     payment_status: 'pending' as const,
     created_at: '2024-01-20T16:00:00Z',
     updated_at: '2024-01-20T16:00:00Z'
   }
-]
+];
 
 export const mockMechanics = [
   {
@@ -101,4 +133,4 @@ export const mockMechanics = [
     },
     is_available: true
   }
-]
+];

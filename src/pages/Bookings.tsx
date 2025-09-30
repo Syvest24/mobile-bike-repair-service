@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, MapPin, Clock, DollarSign, User, Phone } from 'lucide-react';
-import { mockServiceRequests, mockMechanics } from '../lib/mockData';
+import Breadcrumb from '../components/Breadcrumb';
+import { mockServiceRequests, mockMechanics } from '../lib/supabase';
 
 export default function Bookings() {
   const getStatusColor = (status: string) => {
@@ -25,12 +26,14 @@ export default function Bookings() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     });
   };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
+      <Breadcrumb items={[{ label: 'My Bookings' }]} className="mb-6" />
+      
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
         <div className="text-sm text-gray-600">
@@ -40,8 +43,8 @@ export default function Bookings() {
 
       <div className="space-y-6">
         {mockServiceRequests.map((request) => {
-          const mechanic = mockMechanics.find((m) => m.id === request.mechanic_id);
-
+          const mechanic = mockMechanics.find(m => m.id === request.mechanic_id);
+          
           return (
             <div key={request.id} className="card">
               <div className="flex items-start justify-between mb-4">
@@ -107,9 +110,7 @@ export default function Bookings() {
                             className="h-6 w-6 rounded-full object-cover mr-2"
                           />
                           <span className="text-sm text-gray-600">{mechanic.name}</span>
-                          <span className="text-xs text-yellow-500 ml-2">
-                            ★ {mechanic.rating}
-                          </span>
+                          <span className="text-xs text-yellow-500 ml-2">★ {mechanic.rating}</span>
                         </div>
                       </div>
                     </div>
@@ -130,21 +131,14 @@ export default function Bookings() {
                 <h4 className="text-sm font-medium text-gray-900 mb-2">Issues</h4>
                 <div className="space-y-2">
                   {request.issues.map((issue, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between text-sm"
-                    >
+                    <div key={index} className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">{issue.description}</span>
                       <div className="flex items-center space-x-4">
-                        <span
-                          className={`badge ${
-                            issue.severity === 'high'
-                              ? 'badge-error'
-                              : issue.severity === 'medium'
-                              ? 'badge-warning'
-                              : 'badge-success'
-                          }`}
-                        >
+                        <span className={`badge ${
+                          issue.severity === 'high' ? 'badge-error' :
+                          issue.severity === 'medium' ? 'badge-warning' :
+                          'badge-success'
+                        }`}>
                           {issue.severity}
                         </span>
                         {issue.estimated_cost && (
@@ -160,7 +154,9 @@ export default function Bookings() {
 
               {request.status === 'pending' && (
                 <div className="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
-                  <button className="btn-secondary flex-1">Modify Booking</button>
+                  <button className="btn-secondary flex-1">
+                    Modify Booking
+                  </button>
                   <button className="btn text-error-600 hover:bg-error-50 flex-1">
                     Cancel
                   </button>
@@ -169,8 +165,12 @@ export default function Bookings() {
 
               {request.status === 'completed' && (
                 <div className="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
-                  <button className="btn-secondary flex-1">Download Receipt</button>
-                  <button className="btn-primary flex-1">Rate Service</button>
+                  <button className="btn-secondary flex-1">
+                    Download Receipt
+                  </button>
+                  <button className="btn-primary flex-1">
+                    Rate Service
+                  </button>
                 </div>
               )}
             </div>
@@ -185,7 +185,9 @@ export default function Bookings() {
           <p className="text-gray-600 mb-6">
             Book your first bike repair service to get started.
           </p>
-          <button className="btn-primary">Book Service Now</button>
+          <button className="btn-primary">
+            Book Service Now
+          </button>
         </div>
       )}
     </div>

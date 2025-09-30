@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Clock, DollarSign, User } from 'lucide-react';
 import DiagnosticTool from '../components/DiagnosticTool';
+import Breadcrumb from '../components/Breadcrumb';
 import { BikeIssue } from '../types';
 import { mockMechanics } from '../lib/supabase';
 
@@ -14,6 +15,30 @@ export default function BookService() {
 
   const totalCost = detectedIssues.reduce((sum, issue) => sum + (issue.estimated_cost || 0), 0);
   const totalTime = detectedIssues.reduce((sum, issue) => sum + (issue.estimated_time || 0), 0);
+
+  const getBreadcrumbItems = () => {
+    const items = [{ label: 'Services', href: '/book' }];
+    
+    switch (step) {
+      case 'location':
+        items.push({ label: 'Location' });
+        break;
+      case 'diagnostic':
+        items.push({ label: 'Location', href: '/book' }, { label: 'Diagnosis' });
+        break;
+      case 'schedule':
+        items.push({ label: 'Location', href: '/book' }, { label: 'Diagnosis' }, { label: 'Schedule' });
+        break;
+      case 'mechanic':
+        items.push({ label: 'Location', href: '/book' }, { label: 'Diagnosis' }, { label: 'Schedule' }, { label: 'Mechanic' });
+        break;
+      case 'confirm':
+        items.push({ label: 'Location', href: '/book' }, { label: 'Diagnosis' }, { label: 'Schedule' }, { label: 'Mechanic' }, { label: 'Confirm' });
+        break;
+    }
+    
+    return items;
+  };
 
   const handleLocationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +72,7 @@ export default function BookService() {
   if (step === 'location') {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb items={getBreadcrumbItems()} className="mb-6" />
         <div className="card">
           <div className="flex items-center mb-6">
             <MapPin className="h-6 w-6 text-primary-600 mr-2" />
@@ -98,6 +124,7 @@ export default function BookService() {
   if (step === 'diagnostic') {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb items={getBreadcrumbItems()} className="mb-6" />
         <DiagnosticTool onIssuesDetected={handleIssuesDetected} />
       </div>
     );
@@ -115,6 +142,7 @@ export default function BookService() {
 
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb items={getBreadcrumbItems()} className="mb-6" />
         <div className="card">
           <div className="flex items-center mb-6">
             <Clock className="h-6 w-6 text-primary-600 mr-2" />
@@ -184,6 +212,7 @@ export default function BookService() {
   if (step === 'mechanic') {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb items={getBreadcrumbItems()} className="mb-6" />
         <div className="card">
           <div className="flex items-center mb-6">
             <User className="h-6 w-6 text-primary-600 mr-2" />
@@ -238,6 +267,7 @@ export default function BookService() {
 
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb items={getBreadcrumbItems()} className="mb-6" />
         <div className="card">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Confirm Your Booking</h2>
 

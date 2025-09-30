@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Wrench, Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -154,7 +155,10 @@ export default function Auth() {
               <p className="text-sm text-gray-600 mb-2">Demo credentials:</p>
               <p className="text-xs text-gray-500">
                 Email: cyclist@example.com<br />
-                Password: password123
+                Password: password123<br />
+                <span className="text-primary-600 font-medium">
+                  {supabase ? '(Real Supabase Auth)' : '(Mock Auth)'}
+                </span>
               </p>
               <button
                 onClick={() => {
@@ -165,6 +169,11 @@ export default function Auth() {
               >
                 Use demo credentials
               </button>
+              {supabase && (
+                <p className="text-xs text-green-600 mt-2">
+                  ✅ Connected to Supabase
+                </p>
+              )}
             </div>
           )}
         </div>
