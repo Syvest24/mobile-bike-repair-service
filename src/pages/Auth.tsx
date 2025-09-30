@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Wrench, Mail, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
