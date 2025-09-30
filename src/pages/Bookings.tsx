@@ -151,7 +151,7 @@ export default function Bookings() {
                 </div>
               </div>
 
-              {request.status !== 'completed' && request.status !== 'cancelled' && (
+              {( ['pending', 'accepted', 'in_progress'] as const ).includes(request.status as any) && (
                 <div className="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
                   <button className="btn-secondary flex-1">
                     Modify Booking
@@ -162,7 +162,7 @@ export default function Bookings() {
                 </div>
               )}
 
-              {request.status === 'completed' && (
+              {( ['completed'] as const ).includes(request.status as any) && (
                 <div className="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
                   <button className="btn-secondary flex-1">
                     Download Receipt
