@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AlertCircle, CheckCircle, Clock, DollarSign } from 'lucide-react';
 import { BikeIssue } from '../types';
 
@@ -59,7 +59,7 @@ export default function DiagnosticTool({ onIssuesDetected }: DiagnosticToolProps
   const [answers, setAnswers] = useState<Record<string, boolean[]>>({});
 
   const handleIssueToggle = (issueType: string) => {
-    setSelectedIssues(prev => 
+    setSelectedIssues(prev =>
       prev.includes(issueType)
         ? prev.filter(type => type !== issueType)
         : [...prev, issueType]
@@ -81,7 +81,7 @@ export default function DiagnosticTool({ onIssuesDetected }: DiagnosticToolProps
       const issueConfig = issueTypes.find(type => type.type === issueType)!;
       const issueAnswers = answers[issueType] || [];
       const positiveAnswers = Object.values(issueAnswers).filter(Boolean).length;
-      
+
       let severity: 'low' | 'medium' | 'high' = 'low';
       if (positiveAnswers >= 2) severity = 'high';
       else if (positiveAnswers === 1) severity = 'medium';
@@ -117,7 +117,7 @@ export default function DiagnosticTool({ onIssuesDetected }: DiagnosticToolProps
           <AlertCircle className="h-6 w-6 text-primary-600 mr-2" />
           <h3 className="text-lg font-semibold text-gray-900">Bike Diagnostic Tool</h3>
         </div>
-        
+
         <p className="text-gray-600 mb-6">
           Select the issues you're experiencing with your bike:
         </p>
@@ -248,10 +248,10 @@ export default function DiagnosticTool({ onIssuesDetected }: DiagnosticToolProps
           const issue = issueTypes.find(type => type.type === issueType)!;
           const issueAnswers = answers[issueType] || [];
           const positiveAnswers = Object.values(issueAnswers).filter(Boolean).length;
-          
+
           let severity: 'low' | 'medium' | 'high' = 'low';
           let severityColor = 'text-success-600 bg-success-50';
-          
+
           if (positiveAnswers >= 2) {
             severity = 'high';
             severityColor = 'text-error-600 bg-error-50';
