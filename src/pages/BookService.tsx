@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Clock, DollarSign, User } from 'lucide-react';
+import { MapPin, Clock, User } from 'lucide-react';
 import DiagnosticTool from '../components/DiagnosticTool';
 import Breadcrumb from '../components/Breadcrumb';
 import { BikeIssue } from '../types';
@@ -17,7 +17,7 @@ export default function BookService() {
   const totalTime = detectedIssues.reduce((sum, issue) => sum + (issue.estimated_time || 0), 0);
 
   const getBreadcrumbItems = () => {
-    const items = [{ label: 'Services', href: '/book' }];
+    const items: { label: string; href?: string }[] = [{ label: 'Services', href: '/book' }];
     
     switch (step) {
       case 'location':

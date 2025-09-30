@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Clock, DollarSign, User, Phone } from 'lucide-react';
+import { Calendar, MapPin, Clock, DollarSign } from 'lucide-react';
 import Breadcrumb from '../components/Breadcrumb';
 import { mockServiceRequests, mockMechanics } from '../lib/supabase';
 

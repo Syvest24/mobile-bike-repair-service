@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
-  User, Mail, Phone, CreditCard, Settings, Star, Award, 
-  Edit3, Save, X, Camera, Shield, Bell, MapPin, 
+  User, CreditCard, Settings, Star, Award, 
+  Edit3, Save, X, Camera, Shield, MapPin, 
   Calendar, Clock, TrendingUp, Heart, Bike, Wrench,
   ChevronRight, Plus, Trash2
 } from 'lucide-react';
