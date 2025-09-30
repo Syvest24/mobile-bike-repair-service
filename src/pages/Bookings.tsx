@@ -1,5 +1,4 @@
-import React from 'react';
-import { Calendar, MapPin, Clock, DollarSign } from 'lucide-react';
+import { Calendar, MapPin, Clock, DollarSign, User, Phone } from 'lucide-react';
 import Breadcrumb from '../components/Breadcrumb';
 import { mockServiceRequests, mockMechanics } from '../lib/supabase';
 
@@ -152,7 +151,7 @@ export default function Bookings() {
                 </div>
               </div>
 
-              {request.status === 'pending' && (
+              {request.status !== 'completed' && request.status !== 'cancelled' && (
                 <div className="flex space-x-3 mt-6 pt-4 border-t border-gray-200">
                   <button className="btn-secondary flex-1">
                     Modify Booking

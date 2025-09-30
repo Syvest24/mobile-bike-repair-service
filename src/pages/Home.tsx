@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Wrench, 
@@ -73,7 +72,7 @@ export default function Home() {
       {user && (
         <>
           {/* Current Service Status */}
-          {recentService && recentService.status !== 'completed' && (
+          {recentService && recentService.status !== 'completed' && recentService.status !== 'cancelled' && (
             <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 mb-8 border border-primary-200">
               <div className="flex items-start justify-between mb-4">
                 <div>

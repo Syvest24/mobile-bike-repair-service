@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { User } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -31,7 +30,7 @@ export const testSupabaseConnection = async () => {
   }
 
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { error } = await supabase.auth.getSession();
     if (error) {
       console.error('❌ Supabase connection error:', error.message);
       return false;

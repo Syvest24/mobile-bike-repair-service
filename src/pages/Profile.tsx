@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
   User, CreditCard, Settings, Star, Award, 
-  Edit3, Save, X, Camera, Shield, MapPin, 
+  Edit3, Save, X, Camera, Shield, 
   Calendar, Clock, TrendingUp, Heart, Bike, Wrench,
   ChevronRight, Plus, Trash2
 } from 'lucide-react';
@@ -486,23 +486,12 @@ export default function Profile() {
           <div className="card">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Privacy & Security</h3>
             <div className="space-y-4">
-              <button className="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                            <button className="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
                 <div className="flex items-center">
                   <Shield className="h-5 w-5 text-gray-600 mr-3" />
                   <div>
                     <p className="font-medium text-gray-900">Change Password</p>
                     <p className="text-sm text-gray-500">Update your account password</p>
-                  </div>
-                </div>
-                <ChevronRight className="h-4 w-4 text-gray-600" />
-              </button>
-              
-              <button className="w-full flex items-center justify-between p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-                <div className="flex items-center">
-                  <MapPin className="h-5 w-5 text-gray-600 mr-3" />
-                  <div>
-                    <p className="font-medium text-gray-900">Location Preferences</p>
-                    <p className="text-sm text-gray-500">Manage saved locations</p>
                   </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-600" />
