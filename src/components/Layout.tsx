@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, Calendar, User, Settings, Wrench, LogOut, Menu, Bell, Search, MapPin,
-  X, ChevronDown, Zap, Clock, Shield, Star, Phone, MessageCircle, HelpCircle,
+  Home, Calendar, User, Settings, Wrench, LogOut, Menu, Bell, Search,
+  X, ChevronDown, Zap, Star, Phone, MessageCircle, HelpCircle,
   CreditCard, Bike, Award, History
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
