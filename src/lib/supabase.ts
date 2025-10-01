@@ -4,6 +4,12 @@ import { User } from '../types';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('⚠️ Supabase environment variables missing. Using mock authentication.');
+  console.warn('Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+}
+
 // Test Supabase connection
 if (supabaseUrl && supabaseAnonKey) {
   console.log('✅ Supabase configured successfully');
