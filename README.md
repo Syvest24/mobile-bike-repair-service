@@ -215,9 +215,11 @@ npm run build       # Test local build
 Create a `.env` file in the root directory:
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key_here
 ```
+
+**Important**: Never commit the `.env` file to version control. Add your environment variables directly in your hosting platform's dashboard.
 
 ## Project Structure
 
